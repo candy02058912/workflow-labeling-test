@@ -1,0 +1,15 @@
+name: Detect Missing Labels in Issue
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  required_labels:
+    runs-on: ubuntu-latest
+    name: Required Labels
+    steps:
+      - name: Required Labels
+        uses: muhaddimu/required-labels@master
+        with:
+          labels: "Todo, Bug"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
