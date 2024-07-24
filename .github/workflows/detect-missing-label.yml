@@ -4,12 +4,27 @@ on:
     types: [opened, edited]
 
 jobs:
-  required_labels:
+  check-and-assign-label:
     runs-on: ubuntu-latest
-    name: Required Labels
     steps:
-      - name: Required Labels
-        uses: muhaddimu/required-labels@master
+      - name: Check if issue has a label
+        id: check-label
+        run: echo "::set-output name=has_label::$(echo '${{ toJson(github.event.issue.labels) }}' | jq 'length > 0')"
+      
+      - name: Assign "Missing Label" if label is missing
+        if: steps.check-label.outputs.has_label == 'false'
+        uses: actions/github-script@v5
         with:
-          labels: "Todo, Bug"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue_number = context.issue.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const label = "Missing Label";
+            
+            await github.issues.addLabels({
+              owner,
+              repo,
+              issue_number,
+              labels: [label]
+            });
