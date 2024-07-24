@@ -13,7 +13,7 @@ jobs:
       
       - name: Assign "Missing Label" if label is missing
         if: steps.check-label.outputs.has_label == 'false'
-        uses: actions/github-script@v5
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -22,7 +22,7 @@ jobs:
             const repo = context.repo.repo;
             const label = "Missing Label";
             
-            await github.issues.addLabels({
+            await github.rest.issues.addLabels({
               owner,
               repo,
               issue_number,
